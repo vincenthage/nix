@@ -116,7 +116,8 @@ pub fn ptrace_setoptions(pid: Pid, options: ptrace::PtraceOptions) -> Result<()>
     use self::ptrace::*;
     use std::ptr;
 
-    ptrace(PTRACE_SETOPTIONS, pid, ptr::null_mut(), options as *mut c_void).map(drop)
+    let res = unsafe { ffi::ptrace(PTRACE_SETOPTIONS, pid.into(), ptr::null_mut(), options as *mut c_void) };
+    Errno::result(res).map(|_| ())
 }
 
 /// Gets a ptrace event as described by `ptrace(PTRACE_GETEVENTMSG,...)`
